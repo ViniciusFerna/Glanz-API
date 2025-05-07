@@ -7,6 +7,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 @Data
@@ -23,9 +26,19 @@ public class User {
 	
 	private String email;
 	
+	private boolean adminPerms;
+	
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
 	
 	private String gender;
+	
+	@OneToOne
+	@JoinColumn(name = "event_id", referencedColumnName = "id")
+	private Evento eventOwner;
+	
+	@ManyToOne
+	@JoinColumn(name = "address_id", referencedColumnName = "id")
+	private Address address;
 	
 }
