@@ -1,7 +1,6 @@
 package com.eventos.glanz.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.evento.glanz.dto.AcceptInviteDTO;
-import com.evento.glanz.dto.GuestRequestDTO;
+import com.eventos.glanz.dto.AcceptInviteDTO;
+import com.eventos.glanz.dto.GuestRequestDTO;
 import com.eventos.glanz.exceptions.ResourceNotFoundException;
 import com.eventos.glanz.model.Evento;
 import com.eventos.glanz.model.Guests;

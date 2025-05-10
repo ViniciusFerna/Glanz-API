@@ -1,4 +1,4 @@
-package com.evento.glanz.dto;
+package com.eventos.glanz.dto;
 
 import jakarta.validation.constraints.NotNull;
 
