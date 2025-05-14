@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 
 @Configuration
@@ -16,7 +17,8 @@ public class SecurityConfig {
 	private SecurityUserFilter securityUserFilter;
 	
 	private static final String[] PERMIT_URLS = {
-			"user/login"
+			"user/login",
+			"user/"
 	};
 	
 	@Bean
@@ -32,7 +34,7 @@ public class SecurityConfig {
 			
 			// outras rotas, deve estar autenticado
 			authorizeRequests.anyRequest().authenticated();
-		});
+		}).addFilterBefore(securityUserFilter, BasicAuthenticationFilter.class);
 		// Retorno a requisição quando a sessão é desabilitada                                                                      
 		return http.build();
 	}
