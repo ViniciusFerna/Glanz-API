@@ -16,8 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventos.glanz.auth.AuthenticateUserCase;
+import com.eventos.glanz.dto.loginDTO;
 import com.eventos.glanz.model.User;
 import com.eventos.glanz.repository.UserRepository;
+
+import jakarta.validation.Valid;
 
 @RestController
 @CrossOrigin
@@ -26,6 +30,24 @@ public class UserController {
 	
 	@Autowired
 	private UserRepository userRepo;
+	
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@Valid @RequestBody loginDTO user) {
+		try {
+			AuthenticateUserCase auth = new AuthenticateUserCase(userRepo);
+			
+			String token = auth.execute(user.getEmail(), user.getPassword());
+			
+			return ResponseEntity.status(HttpStatus.OK).body(token);
+			
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou senha incorreto");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no servidor");
+		}
+	}
+	
+	
 	
 	@PostMapping("/criarUser")
 	public ResponseEntity<?> createUser(@RequestBody User user) {

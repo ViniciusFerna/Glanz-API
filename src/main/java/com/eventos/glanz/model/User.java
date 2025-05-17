@@ -1,5 +1,6 @@
 package com.eventos.glanz.model;
 
+import com.eventos.glanz.util.HashUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -28,7 +29,7 @@ public class User {
 	
 	private boolean adminPerms;
 	
-	@JsonProperty(access = Access.WRITE_ONLY)
+	@JsonProperty(access = Access.READ_WRITE)
 	private String password;
 	
 	private String gender;
@@ -40,5 +41,9 @@ public class User {
 	@ManyToOne
 	@JoinColumn(name = "address_id", referencedColumnName = "id")
 	private Address address;
+	
+	public void setPassword(String password) {
+		this.password = HashUtil.hash(password);
+	}
 	
 }

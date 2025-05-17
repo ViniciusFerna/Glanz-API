@@ -6,6 +6,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.eventos.glanz.model.User;
 import com.eventos.glanz.repository.UserRepository;
+import com.eventos.glanz.util.HashUtil;
 
 
 public class AuthenticateUserCase {
@@ -19,11 +20,12 @@ public class AuthenticateUserCase {
 		this.repUser = repUser;
 	}
 	
-	public String execute(String name, String password) {
-		User user = repUser.findByNameAndPassword(name, password);
+	public String execute(String email, String rawPassword) {
+		User user = repUser.findByEmail(email);
 		
-		if(user == null) {
-			throw new RuntimeException("Nome ou Senha Incorreto");
+		// Validando a senha fora do banco e comparando a senha escrita com a criptografada por motivos de segurança
+		if (!HashUtil.verify(rawPassword, user.getPassword())) {
+			throw new RuntimeException("Credenciais Incorretas");
 		}
 		
 		return generateToken(user);

@@ -18,7 +18,9 @@ public class SecurityConfig {
 	
 	private static final String[] PERMIT_URLS = {
 			"user/login",
-			"user/"
+			"user/",
+			"user/criarUser",
+			"user/deletarUser/"
 	};
 	
 	@Bean

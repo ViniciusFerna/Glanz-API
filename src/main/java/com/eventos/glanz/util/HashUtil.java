@@ -15,5 +15,9 @@ public class HashUtil {
 		return hash;
 		
 	}
+	
+	public static boolean verify(String rawPassword, String HashedPassword) {
+		return hash(rawPassword).equals(HashedPassword);
+	}
 
 }
