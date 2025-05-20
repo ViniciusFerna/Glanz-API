@@ -1,10 +1,13 @@
 package com.eventos.glanz.config;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -32,33 +35,39 @@ public class SecurityUserFilter extends OncePerRequestFilter{
 				""
 		);
 		
+		private String getTokenFromHeader(HttpServletRequest request) {
+			String header = request.getHeader("Authorization");
+			
+			if (header == null || !header.startsWith("Bearer ")) {
+				return null;
+			}
+			
+			return header.replace("Bearer ", "").trim();		
+			}
+		
 		@Override
 		protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 				FilterChain filterChain) throws IOException, ServletException {
-			// Header -> Authorization -> "Bearer jgfd9ts5s490ksif0jsd874sfFJa"
-			String header = request.getHeader("Authorization");
-			String requestURI = request.getRequestURI();
+			String token = getTokenFromHeader(request);
 			
-			// Se a pessoa mandou token, entra no if
-			if(header != null) {
-				DecodedJWT token = jwtProvider.validateToken(header);
-				
-				if(token == null) {
-					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-					return;
-				}
-				
-				// Se o token é valido
-				request.setAttribute("user_id", token);
-				
-				// token de autenticação
-				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(token.getSubject(), null);
-				
+			DecodedJWT decodedJWT = jwtProvider.validateToken(token);
+			if(token == null) {
+				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token Inválido");
+				return;
 			}
 			
-			// Processa a requisição
+			String role = decodedJWT.getClaim("roles").asString();
+			
+			UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+					decodedJWT.getSubject(),
+					null,
+					Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role))
+				);
+			
+			SecurityContextHolder.getContext().setAuthentication(auth);
 			filterChain.doFilter(request, response);
-		}
+			
+		}	
 		
 		// validar se é uma rota não protegida
 		private boolean isNotProtectedEndpoint(String requestURI) {

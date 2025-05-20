@@ -39,7 +39,8 @@ public class AuthenticateUserCase {
 		// Gerando token JWT
 		return JWT.create()
 				.withSubject(user.getId().toString())
-				.withClaim("name", user.getName())
+				.withClaim("email", user.getEmail())
+				.withClaim("roles", user.isAdminPerms())
 				.withIssuedAt(new Date())
 				.withExpiresAt(new Date(System.currentTimeMillis() + expiration))
 				.sign(algorithm);

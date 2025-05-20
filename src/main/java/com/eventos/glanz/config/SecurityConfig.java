@@ -29,14 +29,14 @@ public class SecurityConfig {
 		// csrf - Cross-Site Request Forgery
 		// csrf.disable() -> Que ele não vai usar sessão, é token
 		http.csrf(csrf -> csrf.disable())
-		.authorizeHttpRequests(authorizeRequests -> {
-			// rotas liberadas
-			authorizeRequests
-				.requestMatchers(PERMIT_URLS).permitAll();
-			
-			// outras rotas, deve estar autenticado
-			authorizeRequests.anyRequest().authenticated();
-		}).addFilterBefore(securityUserFilter, BasicAuthenticationFilter.class);
+		.authorizeHttpRequests(auth -> auth
+				.requestMatchers("/user/login").permitAll()
+				.requestMatchers("/user/").permitAll()
+				.requestMatchers("/admin/**").hasRole("ADMIN")
+				.requestMatchers("/user/deletarUser/{id}").hasAnyRole("ADMIN", "USER")
+				.anyRequest().authenticated()
+			)
+			.addFilterBefore(securityUserFilter, BasicAuthenticationFilter.class);
 		// Retorno a requisição quando a sessão é desabilitada                                                                      
 		return http.build();
 	}

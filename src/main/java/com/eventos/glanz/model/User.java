@@ -29,6 +29,8 @@ public class User {
 	
 	private boolean adminPerms;
 	
+	private String role;
+	
 	@JsonProperty(access = Access.READ_WRITE)
 	private String password;
 	
