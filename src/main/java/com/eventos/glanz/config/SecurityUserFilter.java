@@ -25,15 +25,6 @@ public class SecurityUserFilter extends OncePerRequestFilter{
 	@Autowired
 	private JWTProvider jwtProvider;
 	
-	//rotas permitidas sem autorização
-	private static final List<String> PERMIT_LIST = List.of(
-				"/api/user/"
-			);
-	
-	// rotas privadas (com autenticação)
-		private static final List<String> AUTH_LIST_STARTS_WITH = List.of(
-				""
-		);
 		
 		private String getTokenFromHeader(HttpServletRequest request) {
 			String header = request.getHeader("Authorization");
@@ -50,8 +41,13 @@ public class SecurityUserFilter extends OncePerRequestFilter{
 				FilterChain filterChain) throws IOException, ServletException {
 			String token = getTokenFromHeader(request);
 			
-			DecodedJWT decodedJWT = jwtProvider.validateToken(token);
 			if(token == null) {
+				filterChain.doFilter(request, response);
+				return;
+			}
+			
+			DecodedJWT decodedJWT = jwtProvider.validateToken(token);
+			if(decodedJWT == null) {
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token Inválido");
 				return;
 			}
@@ -68,21 +64,5 @@ public class SecurityUserFilter extends OncePerRequestFilter{
 			filterChain.doFilter(request, response);
 			
 		}	
-		
-		// validar se é uma rota não protegida
-		private boolean isNotProtectedEndpoint(String requestURI) {
-			// lista de caminhos permitidos, verificar se é igual ou bate
-			// -> /api/produtos => true
-			// -> /api/user => false
-			
-			// o :: é uma forma simplificada de fazer isso
-			// return PERMIT_LIST.stream().noneMatch(s -> requestURI.matches(s))
-			return PERMIT_LIST.stream().noneMatch(requestURI::matches);
-		}
-		
-		// validar se é uma rota protegida
-		private boolean protectedList(String requestURI) {
-			return AUTH_LIST_STARTS_WITH.stream().noneMatch(requestURI::startsWith);
-		}
 	
 }

@@ -40,7 +40,7 @@ public class AuthenticateUserCase {
 		return JWT.create()
 				.withSubject(user.getId().toString())
 				.withClaim("email", user.getEmail())
-				.withClaim("roles", user.isAdminPerms())
+				.withClaim("roles", user.getRole())
 				.withIssuedAt(new Date())
 				.withExpiresAt(new Date(System.currentTimeMillis() + expiration))
 				.sign(algorithm);
