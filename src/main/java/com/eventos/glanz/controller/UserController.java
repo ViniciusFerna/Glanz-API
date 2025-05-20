@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eventos.glanz.auth.AuthenticateUserCase;
 import com.eventos.glanz.dto.UserProfileDto;
+import com.eventos.glanz.dto.UserUpdateDto;
 import com.eventos.glanz.dto.loginDTO;
 import com.eventos.glanz.exceptions.ResourceNotFoundException;
 import com.eventos.glanz.model.User;
 import com.eventos.glanz.repository.UserRepository;
+import com.eventos.glanz.util.HashUtil;
 
 import jakarta.validation.Valid;
 
@@ -72,19 +74,22 @@ public class UserController {
 	}
 	
 	@GetMapping("/{id}")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<?> getUser(@PathVariable Long id, Authentication authentication) {
+		// O Authentication e um objeto que vai conter os dados do usuario logado no momento por meio do token passado no header
 		try {
+			// Aqui o authentication.getName() esta pegando o id do user logado e o comparando com o id passado na requisicao
 			Long userId = Long.parseLong(authentication.getName());
 	        if (!id.equals(userId)) {
 	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
 	                   .body("Você só pode visualizar seus próprios dados");
 	        }
 
-	        // 2. Busca o usuário
+	        // Busca o usuário
 	        User user = userRepo.findById(id)
 	            .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
-	        // 3. Retorna DTO seguro (não retorne a entidade diretamente!)
+	        // Retorna DTO (não retorna a entidade diretamente)
 	        UserProfileDto response = new UserProfileDto(
 	            user.getName(),
 	            user.getEmail(),
@@ -116,28 +121,33 @@ public class UserController {
 	}
 	
 	@PutMapping("/{id}")
-	@PreAuthorize("hasRole('ADMIN', 'USER')")
-	public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody @Valid UserUpdateDto userUpdateDto, Authentication authentication) {
 		try {
-			Optional<User> verificarSeExisteUser = userRepo.findById(id);			
 			
-			if(verificarSeExisteUser.isPresent()) {
-				
-				User UserN = verificarSeExisteUser.get();
-				 	UserN.setName(user.getName());
-				 	UserN.setEmail(user.getEmail());
-				 	UserN.setPassword(user.getPassword());
-				 	UserN.setPhone(user.getPhone());
-				 	UserN.setGender(user.getGender());
-				
-				 	userRepo.save(UserN);
-				 	
-				 	return ResponseEntity.ok(UserN);
-				
+			Long userId = Long.parseLong(authentication.getName());
+			if (!id.equals(userId)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+		                   .body("Você só pode atualizar os seus próprios dados");
 			}
 			
+			User user = userRepo.findById(id)
+					.orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 			
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("O usuário passado não existe");
+			
+					user.setName(userUpdateDto.getName());
+				 	user.setEmail(userUpdateDto.getEmail());
+				 	user.setPassword(userUpdateDto.getPassword());
+				 	user.setPhone(userUpdateDto.getPhone());
+				 	user.setGender(userUpdateDto.getGender());
+			
+				 	// Criptografa a senha nova passada caso ela seja passada
+			if (userUpdateDto.getPassword() != null) {
+				user.setPassword(HashUtil.hash(userUpdateDto.getPassword()));
+			}
+			
+			userRepo.save(user);
+			return ResponseEntity.status(HttpStatus.OK).body("Usuário atualizado com sucesso");
 			
 			
 		} catch (Exception e) {
