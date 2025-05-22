@@ -27,7 +27,6 @@ public class User {
 	
 	private String email;
 	
-	private boolean adminPerms;
 	
 	private String role;
 	
