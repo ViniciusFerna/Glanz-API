@@ -2,6 +2,8 @@ package com.eventos.glanz.model;
 
 import jakarta.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,6 +28,7 @@ public class Guests {
 	
 	private boolean confirmed;
 	
+	@JsonBackReference
 	@ManyToOne
 	@JoinColumn(name = "event_id", referencedColumnName = "id")
 	private Evento event;

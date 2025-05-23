@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,6 +28,9 @@ public class Evento {
 	
 	private String description;
 	
+	private boolean visible;
+	
+	@JsonManagedReference
 	@OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Guests> guests = new ArrayList<>();
 	
@@ -39,10 +44,14 @@ public class Evento {
 		guests.setEvent(null);
 	}
 	
-	public void confirmGuest(Long idGuest) {
-		this.guests.stream()
-		.filter(c -> c.getId().equals(idGuest))
-		.findFirst().ifPresent(c -> c.setConfirmed(true));
+	public void confirmGuest(Long guestId) {
+		for (Guests guest : guests) {
+	        if (guest.getId().equals(guestId)) {
+	            guest.setConfirmed(true);
+	            return;
+	        }
+	    }
+	    throw new RuntimeException("Convidado não encontrado no evento");
 	}
 	
 	

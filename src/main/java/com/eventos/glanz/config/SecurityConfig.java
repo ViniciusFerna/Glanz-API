@@ -24,10 +24,11 @@ public class SecurityConfig {
 		// csrf.disable() -> Que ele não vai usar sessão, é token
 		http.csrf(csrf -> csrf.disable())
 		.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/user/login", "/user/criarUser").permitAll()
-				.requestMatchers(HttpMethod.GET, "/user/{id}").authenticated()
+				.requestMatchers("/user/login", "/user/criarUser", "/convidado/addConvidado", "/convidado/aceitarConvite").permitAll()
+				.requestMatchers(HttpMethod.GET, "/user/{id}", "/eventos/").authenticated()
+				.requestMatchers(HttpMethod.PUT, "/user/{id}").authenticated()
 				.requestMatchers("/user/deletarUser").hasAnyRole("USER", "ADMIN")
-				.requestMatchers("/admin/**").hasRole("ADMIN")
+				.requestMatchers("/admin/**", "/eventos/criarEvento").hasRole("ADMIN")
 				.anyRequest().authenticated()
 			)
 			.addFilterBefore(securityUserFilter, BasicAuthenticationFilter.class);
