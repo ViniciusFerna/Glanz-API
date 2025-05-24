@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.eventos.glanz.dto.AcceptInviteDTO;
 import com.eventos.glanz.dto.GuestRequestDTO;
@@ -97,12 +99,6 @@ public class GuestController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no servidor: " + e.getMessage());
 		}
 	}
-	
-	
-	
-	
-	
-	
 	
 	
 	

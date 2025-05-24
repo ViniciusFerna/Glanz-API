@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+</head>
 <body>
-    <h1 th:text="Olá, ' + ${guestName} + ' !">Olá, [Nome]</h1>
-    <p>Você foi convidado(a) para o evento: <strong th:text="${eventName}">[nomeEvento]</strong></p>
-    <p>Data: <span th:text="${temporals.format(eventDate, 'dd/MM/yyyy HH:mm')}">[data]</span></p>
+    <p th:text="'Olá, ' + ${guestName} + '!'">Ola, Convidado!</p>
+    <p>Você foi convidado(a) para o evento: <strong th:text="${eventName}">Nome do evento</strong></p>
 
-    <p>
         <a th:href="${confirmationUrl}"
-        style="background-color: green; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px;">Confirmar presença</a>
-    </p>
-
-    <p>Ou copie esse link: <code th:text="${confirmationUrl}"></code></p>
+        style="display: inline-block; background: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px;">
+		Confirmar presenca</a>
 
 </body>
 </html>
