@@ -37,6 +37,10 @@ public class UserController {
 	@Autowired
 	private UserRepository userRepo;
 	
+	// Login é o básico, na lógica aqui do back só tem email e senha
+	// mas temos que descobrir uma maneira de armazenar o token que é passado no return
+	// e alguma maneira de fazer o JavaScript diferenciar os dados do token que estão criptografados em Sha256.
+	// A chave secreta e o salt estão no authenticateUserCase, HashUtil e no application.properties
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@Valid @RequestBody loginDTO user) {
 		try {
@@ -54,8 +58,9 @@ public class UserController {
 	}
 	
 	
-	
-	@PostMapping("/criarUser")
+	// Esse é o registrar para o usuário criar sua conta, e os dados que ele precisa receber são:
+	// Nome, email, senha(se possível ter o sistema de colocar duas vezes a mesma senha), telefone e gênero
+	@PostMapping("/registrar")
 	public ResponseEntity<?> createUser(@RequestBody User user) {
 		try {
 			if(user.getName().isEmpty()) {
@@ -73,6 +78,9 @@ public class UserController {
 		}
 	}
 	
+	// Essa é a rota para o cliente visualizar o próprio usuário, e os dados que ele mostra são:
+	// Nome, email, telefone e o genêro
+	// Nessa tela também vão ter os botões de atualizar usuario e deletar usuario que vão estar aqui em baixo
 	@GetMapping("/{id}")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<?> getUser(@PathVariable Long id, Authentication authentication) {
@@ -93,6 +101,7 @@ public class UserController {
 	        UserProfileDto response = new UserProfileDto(
 	            user.getName(),
 	            user.getEmail(),
+	            user.getPhone(),
 	            user.getGender()
 	        );
 	        
@@ -104,6 +113,10 @@ public class UserController {
 		
 	}
 	
+	// Esse botão pode ser simples
+	// Só uma coisa que eu queria seria que quando a pessoa aperta o botão que abra uma tela em cima do perfil
+	// e que nessa tela apareça se a pessoa deseja mesmo excluir o usuário dela, e nessa tela sim o botão vai estar 
+	// conectado nessa rota para deletar o usuário e caso a pessoa delete o usuário ela deve voltar para o home sem estar logada
 	@DeleteMapping("/deletarUser")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<?> deleteUser(Authentication authentication) {
@@ -120,6 +133,9 @@ public class UserController {
 		}
 	}
 	
+	
+	// Essa rota só precisa de um botão no perfil de "atualizar usuário" e o jeito que fizer ta bom,
+	// pode abrir uma outra pagina ou fazer na mesma só precisa funcionar
 	@PutMapping("/{id}")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody @Valid UserUpdateDto userUpdateDto, Authentication authentication) {

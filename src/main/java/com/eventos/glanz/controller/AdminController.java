@@ -22,13 +22,22 @@ import com.eventos.glanz.repository.UserRepository;
 
 @RestController
 @CrossOrigin
+
+// Descobrir maneira de pegar os dados do token para que apenas admins possam acessar essa rota
+// No token são passados os seguintes dados: ID, email e roles
+// E lembrando que o ID só é passado quando a pessoa faz login
+// Então descobrir maneira de armazenar o token no browser e usar os dados contidos nele
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
+	
 
 	@Autowired
 	private UserRepository userRepo;
-	
+	// Aqui é a tela do admin, onde ele tem acesso a todas as contas, podendo deletar, atualizar e visualizar qualquer conta de qualquer usuário
+	// Já que essa rota é a que lista todos os usuário que tem cadatro no site e todos os dados deles eu acho que seja melhor de ser a tela inicial da parte de admin
+	// visto que da pra fazer uma div grande e dentro dela colocar os usuários dentro de cards separados para cada um, dentro desses cards tem que ter os seguintes dados:
+	// Nome, email, telefone, as roles do user, o genêro, e o Id de um evento que essa pessoa possa ter(caso ela não tenha nenhum evento cadastrado pode aparcer "sem eventos criados" ou algo do tipo
 	@GetMapping("/")
 	public ResponseEntity<?> getUsers() {
 		try {
@@ -46,6 +55,10 @@ public class AdminController {
 		}
 	}
 	
+	// Esse é o botão de deletar, só que nesse caso ele pode deletar qualquer user
+	// Eu acho melhor colocar em cada card do de cima um botão de deletar e um de atualizar
+	// com cada botão desses pegando o id do usuário do card sem ter que o admin informar nada para deletar
+	// Lembrando que o id para ser deletado é passado na rota depois do /
 	@DeleteMapping("/deleteUser/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> deleteUserAdmin(@PathVariable("id") Long id) {

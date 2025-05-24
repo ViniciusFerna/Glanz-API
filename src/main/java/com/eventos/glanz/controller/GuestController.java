@@ -35,6 +35,12 @@ public class GuestController {
 	@Autowired
 	private GuestConfirmationEventService emailService;
 	
+	
+	// Essa rota vai fazer com que o convidado que o dono do evento adicionar seja colocado na lista do evento
+	// e vai enviar o email para ele, os dados que essa rota precisa para funcionar são: o nome do convidado, o email do convidado e o Id do evento que ele está sendo convidado
+	// Acho que seria bom implementar essa rota na tela de eventos do admin, já que eu não acho que seria legal
+	// deixar na mão do cliente essa parte de adicionar convidados, ainda mais que a quantidade de convidados
+	// será decidida com a equipe pelo Whatsapp com antecedência
 	@PostMapping("/addConvidado")
 	public ResponseEntity<?> addGuest(@RequestBody @Valid GuestRequestDTO guestRequest) {
 		try {
@@ -80,6 +86,10 @@ public class GuestController {
 		}
 	}
 	
+	
+	// Essa rota é a rota que a pessoa vai receber por email para aceitar o convite
+	// A tela dessa rota não precisa ser muito elaborada, acho que só um "Convite aceito com sucesso" (que é o body que já é passado no return)
+	// e talvez um botão de voltar para a home ou para o perfil
 	@GetMapping("/aceitarConvite")
 	public ResponseEntity<?> acceptInvite(@RequestParam Long eventId, @RequestParam Long guestId) {
 		try {
