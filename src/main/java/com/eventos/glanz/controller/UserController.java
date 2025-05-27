@@ -1,6 +1,8 @@
 package com.eventos.glanz.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +50,11 @@ public class UserController {
 			
 			String token = auth.execute(user.getEmail(), user.getPassword());
 			
-			return ResponseEntity.status(HttpStatus.OK).body(token);
+			// com Map e possivel retornar um body em JSON, ja que o springboot usa json para serializar o map
+			Map<String, String> response = new HashMap<>();
+			response.put("token", token);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 			
 		} catch (RuntimeException e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou senha incorreto");
