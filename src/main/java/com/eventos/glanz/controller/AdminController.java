@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventos.glanz.model.Evento;
 import com.eventos.glanz.model.User;
+import com.eventos.glanz.repository.EventoRepository;
 import com.eventos.glanz.repository.UserRepository;
 
 @RestController
@@ -31,7 +33,9 @@ import com.eventos.glanz.repository.UserRepository;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 	
-
+	@Autowired
+	private EventoRepository eventRepo;
+	
 	@Autowired
 	private UserRepository userRepo;
 	// Aqui é a tela do admin, onde ele tem acesso a todas as contas, podendo deletar, atualizar e visualizar qualquer conta de qualquer usuário
@@ -105,6 +109,32 @@ public class AdminController {
 			}
 			
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("O usuário passado não existe");
+			
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no servidor");
+		}
+	}
+	
+	@PutMapping("/placeEvent/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> placeUserInEvent(@PathVariable("id") Long eventId, @RequestBody User user) {
+		try {
+			User userExistente = userRepo.findByEmail(user.getEmail());
+			
+			if (userExistente == null) {
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body("O usuário passado não existe");
+			}
+			
+			Optional<Evento> evento = eventRepo.findById(eventId);
+			
+			if (evento.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body("O evento passado não existe");
+			}
+			
+			userExistente.setEventOwner(evento.get());
+			userRepo.save(userExistente);
+			
+			return ResponseEntity.status(HttpStatus.OK).body("Usuário ligado ao evento com sucesso");
 			
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no servidor");
