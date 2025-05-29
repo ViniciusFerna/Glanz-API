@@ -13,7 +13,7 @@ public class AuthenticateUserCase {
 
 	private final UserRepository repUser;
 	private final String secretKey = "projetinhosenaifellas";
-	private final long expiration = 86400000; // 1 dia em milissegundos 
+	private final long expiration = 604800000; // 7 dias em milissegundos 
 	
 	// construtor
 	public AuthenticateUserCase(UserRepository repUser) {

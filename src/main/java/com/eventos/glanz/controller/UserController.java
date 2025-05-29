@@ -75,6 +75,10 @@ public class UserController {
 				return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Digite uma senha para criar um usuario");
 			}
 			
+			if (user.getRole() == null || user.getRole().isEmpty()) {
+				user.setRole("USER");
+			}
+			
 			User newUser = userRepo.save(user);
 			
 			return ResponseEntity.ok(newUser);
