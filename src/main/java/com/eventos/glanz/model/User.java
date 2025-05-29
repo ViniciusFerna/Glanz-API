@@ -27,8 +27,7 @@ public class User {
 	
 	private String email;
 	
-	
-	private String role;
+	private String role = "USER";
 	
 	@JsonProperty(access = Access.READ_WRITE)
 	private String password;
@@ -38,10 +37,6 @@ public class User {
 	@OneToOne
 	@JoinColumn(name = "event_id", referencedColumnName = "id")
 	private Evento eventOwner;
-	
-	@ManyToOne
-	@JoinColumn(name = "address_id", referencedColumnName = "id")
-	private Address address;
 	
 	public void setPassword(String password) {
 		this.password = HashUtil.hash(password);

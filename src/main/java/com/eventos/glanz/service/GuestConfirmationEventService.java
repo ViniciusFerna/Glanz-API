@@ -29,7 +29,7 @@ public class GuestConfirmationEventService {
             // Prepara o contexto do template
             Context context = new Context();
             context.setVariable("guestName", guests.getName());
-            context.setVariable("eventName", event.getNameEvent());
+            context.setVariable("eventName", event.getTitle());
             context.setVariable("confirmationUrl", "http://localhost:8080/convidado/aceitarConvite?eventId="
 					.concat(String.valueOf(event.getId())
 					.concat("&guestId=")
@@ -40,7 +40,7 @@ public class GuestConfirmationEventService {
             
             // Configura o e-mail
             helper.setTo(guests.getEmail());
-            helper.setSubject("Confirmação de Presença: " + event.getNameEvent());
+            helper.setSubject("Confirmação de Presença: " + event.getTitle());
             helper.setText(htmlContent, true); // true = conteúdo é HTML
             
             mailSender.send(message);

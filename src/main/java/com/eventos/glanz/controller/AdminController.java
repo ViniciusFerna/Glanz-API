@@ -97,7 +97,6 @@ public class AdminController {
 				 	UserN.setGender(user.getGender());
 				 	UserN.setRole(user.getRole());
 				 	UserN.setEventOwner(user.getEventOwner());
-				 	UserN.setAddress(user.getAddress());
 				
 				 	userRepo.save(UserN);
 				 	
