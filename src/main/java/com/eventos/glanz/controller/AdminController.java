@@ -134,7 +134,7 @@ public class AdminController {
 			userExistente.setEventOwner(evento.get());
 			userRepo.save(userExistente);
 			
-			return ResponseEntity.status(HttpStatus.OK).body("Usuário ligado ao evento com sucesso");
+			return ResponseEntity.status(HttpStatus.OK).body("Esse usuário agora é dono desse evento");
 			
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no servidor");
