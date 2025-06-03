@@ -1,5 +1,7 @@
 package com.eventos.glanz.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 
 @Configuration
@@ -24,7 +27,13 @@ public class SecurityConfig {
 		// csrf - Cross-Site Request Forgery
 		// csrf.disable() -> Que ele não vai usar sessão, é token
 		http
-		.cors(Customizer.withDefaults())
+		.cors(cors -> cors.configurationSource(request -> {
+			CorsConfiguration config = new CorsConfiguration();
+			config.setAllowedOrigins(List.of("*"));
+			config.setAllowedMethods(List.of("*"));
+			config.setAllowedHeaders(List.of("*"));
+			return config;
+		}))
 		.csrf(csrf -> csrf.disable())
 		.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/user/login", "/user/registrar", "/convidado/addConvidado", "/convidado/aceitarConvite", "/swagger-ui/**").permitAll()
