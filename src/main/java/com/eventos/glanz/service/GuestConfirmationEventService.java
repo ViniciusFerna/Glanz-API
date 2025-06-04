@@ -30,7 +30,7 @@ public class GuestConfirmationEventService {
             Context context = new Context();
             context.setVariable("guestName", guests.getName());
             context.setVariable("eventName", event.getTitle());
-            context.setVariable("confirmationUrl", "http://localhost:8080/convidado/aceitarConvite?eventId="
+            context.setVariable("confirmationUrl", "https://glanz-e0a2cfbgbbepg6bf.eastus2-01.azurewebsites.net/convidado/aceitarConvite?eventId="
 					.concat(String.valueOf(event.getId())
 					.concat("&guestId=")
 					.concat(String.valueOf(guests.getId()))));
