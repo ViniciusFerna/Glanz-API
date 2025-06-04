@@ -29,7 +29,7 @@ public class DatabaseConfig {
 	}
 	
 	@Bean
-	@Profile("azure")
+	@Profile("prod")
 	@Primary
 	public DataSource azureDataSource() {
 		HikariConfig config = new HikariConfig();
