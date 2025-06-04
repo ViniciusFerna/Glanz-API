@@ -34,7 +34,7 @@ public class DatabaseConfig {
 	public DataSource azureDataSource() {
 		HikariConfig config = new HikariConfig();
 		config.setJdbcUrl("jdbc:sqlserver://glanzdatabase.database.windows.net:1433;database=Glanz;user=glanzADM@glanzdatabase;password=GLAnz@123;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;");
-		config.setUsername("glanzADM");
+		config.setUsername("glanzADM@glanzdatabase");
 		config.setPassword("GLAnz@123");
 		config.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		return new HikariDataSource(config);
