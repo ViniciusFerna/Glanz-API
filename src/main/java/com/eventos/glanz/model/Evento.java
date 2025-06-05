@@ -42,6 +42,8 @@ public class Evento {
     private String status; // Pode ser: "PLANEJADO", "EM ANDAMENTO", "CONCLUIDO", "CANCELADO"
     
     private boolean visible = true;
+    
+    private boolean hasOwner = false;
 	
 	@JsonManagedReference
 	@OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)

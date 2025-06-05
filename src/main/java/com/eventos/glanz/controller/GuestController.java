@@ -1,9 +1,15 @@
 package com.eventos.glanz.controller;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +46,7 @@ public class GuestController {
 	// deixar na mão do cliente essa parte de adicionar convidados, ainda mais que a quantidade de convidados
 	// será decidida com a equipe pelo Whatsapp com antecedência
 	@PostMapping("/addConvidado")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> addGuest(@RequestBody @Valid GuestRequestDTO guestRequest) {
 		try {
 			
@@ -84,6 +91,26 @@ public class GuestController {
 		}
 	}
 	
+	@GetMapping("/evento/{id}/guests")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> getGuests(@PathVariable Long id) {
+		try {
+			Optional<Evento> eventoOpt = eventRep.findById(id);
+			if (eventoOpt.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Evento não encontrado 1");
+			}
+			
+			Evento evento = eventoOpt.get();
+			
+			List<Guests> guests = guestRep.findByEvent(evento);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(guests);
+			
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no servidor: " + e.getMessage());
+		}
+	}
+	
 	
 	// Essa rota é a rota que a pessoa vai receber por email para aceitar o convite
 	// A tela dessa rota não precisa ser muito elaborada, acho que só um "Convite aceito com sucesso" (que é o body que já é passado no return)
@@ -92,7 +119,7 @@ public class GuestController {
 	public ResponseEntity<?> acceptInvite(@RequestParam Long eventId, @RequestParam Long guestId) {
 		try {
 			Evento event = eventRep.findById(eventId)
-	                .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado"));
+	                .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado 2"));
 	        
 	        Guests guest = guestRep.findById(guestId)
 	                .orElseThrow(() -> new ResourceNotFoundException("Convidado não encontrado"));

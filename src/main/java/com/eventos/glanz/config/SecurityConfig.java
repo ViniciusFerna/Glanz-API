@@ -36,11 +36,12 @@ public class SecurityConfig {
 		}))
 		.csrf(csrf -> csrf.disable())
 		.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/user/login", "/user/registrar", "/convidado/addConvidado", "/convidado/aceitarConvite", "/swagger-ui/**").permitAll()
+				.requestMatchers("/user/login", "/user/registrar", "/swagger-ui/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/convidado/aceitarConvite").permitAll()
 				.requestMatchers(HttpMethod.GET, "/user/{id}", "/eventos/{id}", "/eventos/").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/user/{id}").authenticated()
 				.requestMatchers("/user/deletarUser").hasAnyRole("USER", "ADMIN")
-				.requestMatchers("/admin/**", "/eventos/criarEvento", "/eventos/all").hasRole("ADMIN")
+				.requestMatchers("/admin/**", "/eventos/criarEvento", "/eventos/all", "/convidado/addConvidado").hasRole("ADMIN")
 				.anyRequest().authenticated()
 			)
 			.addFilterBefore(securityUserFilter, BasicAuthenticationFilter.class);

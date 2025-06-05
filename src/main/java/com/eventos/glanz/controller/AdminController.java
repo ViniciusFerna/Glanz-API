@@ -125,14 +125,23 @@ public class AdminController {
 				return ResponseEntity.status(HttpStatus.NO_CONTENT).body("O usuário passado não existe");
 			}
 			
-			Optional<Evento> evento = eventRepo.findById(eventId);
+			Optional<Evento> eventoOpt = eventRepo.findById(eventId);
 			
-			if (evento.isEmpty()) {
+			if (eventoOpt.isEmpty()) {
 				return ResponseEntity.status(HttpStatus.NO_CONTENT).body("O evento passado não existe");
 			}
 			
-			userExistente.setEventOwner(evento.get());
+			Evento evento = eventoOpt.get();
+			
+			if (userExistente.getEventOwner() != null && userExistente.getEventOwner().getId().equals(eventId)) {
+                return ResponseEntity.status(HttpStatus.OK).body("Esse usuário já é o dono desse evento.");
+            }
+			
+			userExistente.setEventOwner(evento);
 			userRepo.save(userExistente);
+			
+			evento.setHasOwner(true);
+            eventRepo.save(evento);
 			
 			return ResponseEntity.status(HttpStatus.OK).body("Esse usuário agora é dono desse evento");
 			
