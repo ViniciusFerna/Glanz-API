@@ -28,7 +28,7 @@ public class User {
 	
 	private String email;
 	
-	private String role = "USER";
+	private String role;
 	
 	@JsonProperty(access = Access.READ_WRITE)
 	private String password;
