@@ -36,6 +36,7 @@ public class SecurityConfig {
 		}))
 		.csrf(csrf -> csrf.disable())
 		.authorizeHttpRequests(auth -> auth
+				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.requestMatchers("/user/login", "/user/registrar", "/swagger-ui/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/convidado/aceitarConvite").permitAll()
 				.requestMatchers(HttpMethod.GET, "/user/{id}", "/eventos/{id}", "/eventos/").authenticated()
