@@ -82,7 +82,7 @@ public class UserController {
 			return ResponseEntity.ok(newUser);
 				
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no servidor");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no servidor1");
 		}
 	}
 	
