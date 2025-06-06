@@ -43,6 +43,7 @@ public class Evento {
     
     private boolean visible = true;
     
+    @Column(nullable = true) 
     private boolean hasOwner = false;
 	
 	@JsonManagedReference
