@@ -97,7 +97,7 @@ public class GuestController {
 		try {
 			Optional<Evento> eventoOpt = eventRep.findById(id);
 			if (eventoOpt.isEmpty()) {
-				return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Evento não encontrado 1");
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Evento não encontrado");
 			}
 			
 			Evento evento = eventoOpt.get();
@@ -119,7 +119,7 @@ public class GuestController {
 	public ResponseEntity<?> acceptInvite(@RequestParam Long eventId, @RequestParam Long guestId) {
 		try {
 			Evento event = eventRep.findById(eventId)
-	                .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado 2"));
+	                .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado"));
 	        
 	        Guests guest = guestRep.findById(guestId)
 	                .orElseThrow(() -> new ResourceNotFoundException("Convidado não encontrado"));
