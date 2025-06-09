@@ -2,6 +2,7 @@ package com.eventos.glanz.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eventos.glanz.auth.AuthenticateUserCase;
 import com.eventos.glanz.dto.UserProfileDto;
+import com.eventos.glanz.dto.UserProfileUpdateDto;
 import com.eventos.glanz.dto.UserUpdateDto;
 import com.eventos.glanz.dto.loginDTO;
 import com.eventos.glanz.exceptions.ResourceNotFoundException;
@@ -67,10 +69,15 @@ public class UserController {
 	@PostMapping("/registrar")
 	public ResponseEntity<?> createUser(@RequestBody User user) {
 		try {
+			
 			if(user.getName().isEmpty()) {
 				return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Digite o nome de usuario para criar um usuario");
 			} else if(user.getPassword().isEmpty()) {
 				return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Digite uma senha para criar um usuario");
+			} 
+			
+			if(userRepo.existsByEmail(user.getEmail())) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).body("Email já cadastrado");
 			}
 			
 			if (user.getRole() == null || user.getRole().isEmpty()) {
@@ -146,7 +153,7 @@ public class UserController {
 	// pode abrir uma outra pagina ou fazer na mesma só precisa funcionar
 	@PutMapping("/{id}")
 	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody @Valid UserUpdateDto userUpdateDto, Authentication authentication) {
+	public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody @Valid UserProfileUpdateDto userUpdateDto, Authentication authentication) {
 		try {
 			
 			Long userId = Long.parseLong(authentication.getName());
@@ -160,15 +167,8 @@ public class UserController {
 			
 			
 					user.setName(userUpdateDto.getName());
-				 	user.setEmail(userUpdateDto.getEmail());
-				 	user.setPassword(userUpdateDto.getPassword());
 				 	user.setPhone(userUpdateDto.getPhone());
-				 	user.setGender(userUpdateDto.getGender());
 			
-				 	// Criptografa a senha nova passada caso ela seja passada
-			if (userUpdateDto.getPassword() != null) {
-				user.setPassword(HashUtil.hash(userUpdateDto.getPassword()));
-			}
 			
 			userRepo.save(user);
 			return ResponseEntity.status(HttpStatus.OK).body("Usuário atualizado com sucesso");
@@ -179,17 +179,36 @@ public class UserController {
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	@GetMapping("/{userId}/events")
+    @PreAuthorize("isAuthenticated()") // Apenas usuários autenticados podem acessar
+    public ResponseEntity<?> getUserOwnedEvent(@PathVariable Long userId, Authentication authentication) {
+        try {
+            Long authenticatedUserId = Long.parseLong(authentication.getName());
+            if (!userId.equals(authenticatedUserId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("Você só pode visualizar os eventos vinculados à sua própria conta.");
+            }
+            Optional<User> userOpt = userRepo.findById(userId);
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
+            }
 
-	
+            User user = userOpt.get();
+
+            if (user.getEventOwner() != null) {
+                return ResponseEntity.ok(user.getEventOwner());
+            } else {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Nenhum evento vinculado a este usuário.");
+            }
+
+        } catch (NumberFormatException e) {
+            // Lidar com o caso em que o userId no path é inválido
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID de usuário inválido.");
+        } catch (Exception e) {
+            // Logar a exceção para depuração
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no servidor ao buscar evento do usuário.");
+        }
+    }
 	
 }

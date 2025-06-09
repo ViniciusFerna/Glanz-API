@@ -36,7 +36,7 @@ public class User {
 	private String gender;
 	
 	@OneToOne
-	@JoinColumn(name = "event_id", referencedColumnName = "id")
+	@JoinColumn(name = "event_id", referencedColumnName = "id", nullable = true)
 	private Evento eventOwner;
 	
 	public void setPassword(String password) {

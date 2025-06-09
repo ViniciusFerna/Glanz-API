@@ -21,6 +21,7 @@ import com.eventos.glanz.model.Evento;
 import com.eventos.glanz.model.User;
 import com.eventos.glanz.repository.EventoRepository;
 import com.eventos.glanz.repository.UserRepository;
+import com.eventos.glanz.util.HashUtil;
 
 @RestController
 @CrossOrigin
@@ -101,6 +102,11 @@ public class AdminController {
 				 	UserN.setGender(user.getGender());
 				 	UserN.setRole(user.getRole());
 				 	UserN.setEventOwner(user.getEventOwner());
+				 	
+				 // Criptografa a senha nova passada caso ela seja passada
+					if (user.getPassword() != null) {
+						user.setPassword(HashUtil.hash(user.getPassword()));
+					}
 				
 				 	userRepo.save(UserN);
 				 	
@@ -146,7 +152,11 @@ public class AdminController {
 			return ResponseEntity.status(HttpStatus.OK).body("Esse usuário agora é dono desse evento");
 			
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no servidor");
+		    // Log a exceção para ver o stack trace completo
+		    e.printStackTrace(); // Apenas para depuração local, use um logger de verdade em produção
+		    System.err.println("Erro ao vincular usuário ao evento: " + e.getMessage()); // Mensagem para console
+
+		    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no servidor: " + e.getMessage());
 		}
 	}
 	

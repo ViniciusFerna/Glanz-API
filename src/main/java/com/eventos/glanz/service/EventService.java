@@ -2,10 +2,13 @@ package com.eventos.glanz.service;
 
 import com.eventos.glanz.controller.EventController;
 import com.eventos.glanz.model.Evento;
+import com.eventos.glanz.model.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.eventos.glanz.repository.EventoRepository;
+import com.eventos.glanz.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,18 +17,17 @@ import java.util.Optional;
 public class EventService {
 
     private final EventoRepository eventRepository;
+    
+    private final UserRepository userRepository;
 
     @Autowired
-    public EventService(EventoRepository eventRepository) {
+    public EventService(EventoRepository eventRepository, UserRepository userRepository) {
         this.eventRepository = eventRepository;
+		this.userRepository = userRepository;
     }
 
     public List<Evento> getAllEvents() {
         return eventRepository.findAll();
-    }
-    
-    public List<Evento> getVisibleEvents() {
-    	return eventRepository.findByVisibleTrue();
     }
 
     public Optional<Evento> getEventById(Long id) {
@@ -50,8 +52,17 @@ public class EventService {
     }
 
     public void deleteEvent(Long id) {
-        Evento event = eventRepository.findById(id)
+    	Evento eventToDelete = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Evento não encontrado com id: " + id));
-        eventRepository.delete(event);
+
+        Optional<User> ownerUserOpt = userRepository.findByEventOwnerId(id);
+
+        if (ownerUserOpt.isPresent()) {
+            User ownerUser = ownerUserOpt.get();
+            ownerUser.setEventOwner(null);
+            userRepository.save(ownerUser); 
+        }
+
+        eventRepository.delete(eventToDelete);
     }
 }

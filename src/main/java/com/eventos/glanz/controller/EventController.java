@@ -29,11 +29,6 @@ public class EventController {
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
     
-    @GetMapping("/")
-    public ResponseEntity<List<Evento>> getVisibleEvents() {
-			List<Evento> visibleEvents = eventService.getVisibleEvents();
-			return new ResponseEntity<>(visibleEvents, HttpStatus.OK);
-    }
 
     // Retorna um evento específico por ID
     @GetMapping("/{id}")
