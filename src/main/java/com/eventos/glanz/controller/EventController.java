@@ -23,7 +23,6 @@ public class EventController {
 
     // Retorna todos os eventos
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Evento>> getAllEvents() {
         List<Evento> events = eventService.getAllEvents();
         return new ResponseEntity<>(events, HttpStatus.OK);
